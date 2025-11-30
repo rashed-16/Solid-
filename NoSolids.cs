@@ -1,44 +1,34 @@
-// Bad Example – Violates All SOLID Principles
+// BAD CODE — Violates SRP, OCP, and LSP
+// This class handles validation, payment logic, method selection,
+// and logging all in one place.
+
 using System;
 
-namespace SOLID_Demo
+namespace BadPaymentExample
 {
-    public class BadCalculatorV2
+    public class PaymentService
     {
-        // Method does everything + depends on strings + prints directly.
-        public void Calculate(string operation, double x, double y)
+        public void ProcessPayment(string method, double amount)
         {
-            if (operation == "add")
+            // Bad: Validation inside the same class
+            Console.WriteLine("Validating payment...");
+
+            // Bad: Method-specific logic hardcoded
+            if (method == "CreditCard")
             {
-                Console.WriteLine(x + y);
+                Console.WriteLine($"Processing credit card payment: ${amount}");
             }
-            else if (operation == "sub")
+            else if (method == "PayPal")
             {
-                Console.WriteLine(x - y);
-            }
-            else if (operation == "mul")
-            {
-                Console.WriteLine(x * y);
-            }
-            else if (operation == "div")
-            {
-                if (y == 0)
-                {
-                    Console.WriteLine("Division By Zero!!!");
-                }
-                else
-                {
-                    Console.WriteLine(x / y);
-                }
-            }
-            else if (operation == "pow")
-            {
-                Console.WriteLine(Math.Pow(x, y));
+                Console.WriteLine($"Processing PayPal payment: ${amount}");
             }
             else
             {
-                Console.WriteLine("Invalid Operation");
+                Console.WriteLine("Unsupported payment method!");
             }
+
+            // Bad: Logging inside the same class
+            Console.WriteLine("Payment has been logged.");
         }
     }
 }
