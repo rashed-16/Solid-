@@ -1,71 +1,52 @@
 using System;
 
-namespace SOLID_Calculator
+namespace SolidPaymentSystem
 {
-    // ================================
-    // Interface: Operation Contract
-    // (I – Interface Segregation Principle)
-    // ================================
-    public interface IOperation
+    // ABSTRACT BASE CLASS — Supports OCP + LSP
+   
+    // All payment methods must inherit from this base class.
+    // LSP: Any subclass can replace PaymentMethod safely.
+    // OCP: Adding new payment methods requires no changes to existing code.
+    public abstract class PaymentMethod
     {
-        double Execute(double a, double b);
+        public abstract void Pay(double amount);
     }
 
-    // ================================
-    // Concrete Operations
-    // (S – Single Responsibility Principle)
-    // (O – Open/Closed Principle)
-    // Each class handles ONE operation only.
-    // New operations can be added without modifying existing ones.
-    // ================================
-    public class AddOperation : IOperation
+   
+    // CREDIT CARD PAYMENT — SRP
+  
+    // This class is responsible ONLY for credit card payment logic.
+    public class CreditCardPayment : PaymentMethod
     {
-        public double Execute(double a, double b) => a + b;
-    }
-
-    public class SubtractOperation : IOperation
-    {
-        public double Execute(double a, double b) => a - b;
-    }
-
-    public class MultiplyOperation : IOperation
-    {
-        public double Execute(double a, double b) => a * b;
-    }
-
-    public class DivideOperation : IOperation
-    {
-        public double Execute(double a, double b)
+        public override void Pay(double amount)
         {
-            if (b == 0)
-                throw new DivideByZeroException("Cannot divide by zero.");
-            return a / b;
+            Console.WriteLine($"[CreditCard] Processing payment: ${amount}");
         }
     }
 
-    public class PowerOperation : IOperation
+  
+    // PAYPAL PAYMENT — SRP
+  
+    // This class is responsible ONLY for PayPal payment logic.
+    public class PayPalPayment : PaymentMethod
     {
-        public double Execute(double a, double b) => Math.Pow(a, b);
+        public override void Pay(double amount)
+        {
+            Console.WriteLine($"[PayPal] Processing payment: ${amount}");
+        }
     }
 
-    // ================================
-    // Calculator Class
-    // (D – Dependency Inversion Principle)
-    // Depends on abstraction (IOperation), not concrete classes.
-    // Operation is injected through constructor (Dependency Injection)
-    // ================================
-    public class SolidCalculator
+    // PAYMENT PROCESSOR — SRP + OCP
+
+    // SRP: Only responsible for handling the payment flow.
+    // OCP: Works with any PaymentMethod (current or future)
+    //      without changing this class.
+    public class PaymentProcessor
     {
-        private readonly IOperation _operation;
-
-        public SolidCalculator(IOperation operation)
+        public void Process(PaymentMethod method, double amount)
         {
-            _operation = operation;
-        }
-
-        public double Calculate(double a, double b)
-        {
-            return _operation.Execute(a, b);
+            method.Pay(amount);
+            Console.WriteLine("Payment completed successfully.\n");
         }
     }
 }
